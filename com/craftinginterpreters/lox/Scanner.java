@@ -61,7 +61,14 @@ class Scanner {
       case ',': addToken(COMMA); break;
       case '.': addToken(DOT); break;
       case '-': addToken(MINUS); break;
-      case '+': addToken(PLUS); break;
+      case '+': 
+        if (isDigit(peek())) { 
+          number(); 
+        }
+        else { 
+          addToken(PLUS); 
+        }
+        break;
       case ';': addToken(SEMICOLON); break;
       case '*': addToken(STAR); break; 
       case '!':
@@ -71,7 +78,13 @@ class Scanner {
         addToken(match('=') ? EQUAL_EQUAL : EQUAL);
         break;
       case '<':
-        addToken(match('=') ? LESS_EQUAL : LESS);
+        if (match('=')){
+          addToken(LESS_EQUAL);
+        } else if (match('<')) {
+          addToken(SHIFT_LEFT);
+        } else {
+          addToken(LESS);
+        }
         break;
       case '>':
         addToken(match('=') ? GREATER_EQUAL : GREATER);

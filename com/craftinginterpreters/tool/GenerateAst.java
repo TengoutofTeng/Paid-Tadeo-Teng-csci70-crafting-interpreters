@@ -4,25 +4,50 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.List;
+import java.nio.file.Path;
+//import java.nio.file.Paths;
+
 
 public class GenerateAst {
   public static void main(String[] args) throws IOException {
+    /*
     if (args.length != 1) {
       System.err.println("Usage: generate_ast <output directory>");
       System.exit(64);
     }
-    String outputDir = args[0];
+    */
+    //args = ['']
+    //System.out.print("hi");
+    String outputDir = System.getProperty("user.dir");
+    //outputDir = outputDir + "\\" + "craftinginterpreters" +"\\" + "lox";
+    //outputDir = outputDir
+    System.out.println("1) current directory = "+outputDir);
     defineAst(outputDir, "Expr", Arrays.asList(
+      "Assign   : Token name, Expr value",
       "Binary   : Expr left, Token operator, Expr right",
       "Grouping : Expr expression",
       "Literal  : Object value",
-      "Unary    : Token operator, Expr right"
+      "Logical  : Expr left, Token operator, Expr right",
+      "Unary    : Token operator, Expr right",
+      "Variable : Token name"
     ));
+
+    defineAst(outputDir, "Stmt", Arrays.asList(
+      "Block      : List<Stmt> statements",
+      "Expression : Expr expression",
+      "If         : Expr condition, Stmt thenBranch," + " Stmt elseBranch",
+      "Print      : Expr expression",
+      "Var        : Token name, Expr initializer",
+      "While      : Expr condition, Stmt body"
+    ));
+
   }
 
   private static void defineAst(String outputDir, String baseName, List<String> types) throws IOException {
-    String path = outputDir + "/" + baseName + ".java";
-    PrintWriter writer = new PrintWriter(path, "UTF-8");
+    Path path = Path.of(outputDir+"/"+"com"+"/"+"craftinginterpreters"+"/"+"lox"+"/" + baseName + ".java");
+    //String path = outputDir + "/" + baseName + ".java";
+    System.out.println("2) current directory = "+path.toString());
+    PrintWriter writer = new PrintWriter(path.toString(), "UTF-8");
 
     writer.println("package com.craftinginterpreters.lox;");
     writer.println();
