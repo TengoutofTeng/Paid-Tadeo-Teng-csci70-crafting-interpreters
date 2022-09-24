@@ -212,7 +212,7 @@ class Parser {
   private Expr comparison() {
     Expr expr = term();
 
-    while (match(GREATER, GREATER_EQUAL, LESS, LESS_EQUAL)) {
+    while (match(GREATER, GREATER_EQUAL, LESS, LESS_EQUAL, SHIFT_LEFT)) {
       Token operator = previous();
       Expr right = term();
       expr = new Expr.Binary(expr, operator, right);

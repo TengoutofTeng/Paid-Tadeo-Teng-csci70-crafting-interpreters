@@ -176,51 +176,120 @@ class Interpreter implements Expr.Visitor<Object>,Stmt.Visitor<Void> {
 
 
   @Override
-  public Object visitBinaryExpr(Expr.Binary expr) {
-    Object left = evaluate(expr.left);
-    Object right = evaluate(expr.right); 
+    public Object visitBinaryExpr(Expr.Binary expr) {
+        Object left = evaluate(expr.left);
+        Object right = evaluate(expr.right); 
 
-    switch (expr.operator.type) {
-      case GREATER:
-        checkNumberOperands(expr.operator, left, right);
-        return (double)left > (double)right;
-      case GREATER_EQUAL:
-        checkNumberOperands(expr.operator, left, right);
-        return (double)left >= (double)right;
-      case LESS:
-        checkNumberOperands(expr.operator, left, right);
-        return (double)left < (double)right;
-      case LESS_EQUAL:
-        checkNumberOperands(expr.operator, left, right);
-        return (double)left <= (double)right;
-      case MINUS:
-        checkNumberOperands(expr.operator, left, right);
-        return (double)left - (double)right;
-      case PLUS:
+        switch (expr.operator.type) {
+        case GREATER:
+            if (left instanceof Double && right instanceof Double) {
+                return (double)left > (double)right;
+                } 
+    
+            if (left instanceof String && right instanceof Double) {
+                int temp =((Double) right).intValue();
+                return ((String)left).length() > temp;
+            }   
+                
+            throw new RuntimeError(expr.operator,
+                    "Operands must be two numbers or a string and an integer.");
+
+        case GREATER_EQUAL:
+            if (left instanceof Double && right instanceof Double) {
+                return (double)left >= (double)right;
+            } 
+    
+            if (left instanceof String && right instanceof Double) {
+                   int temp =((Double) right).intValue();
+                return ((String)left).length() >= temp;
+            }   
+                
+            throw new RuntimeError(expr.operator,
+                    "Operands must be two numbers or a string and an integer.");
+
+        case LESS:
         if (left instanceof Double && right instanceof Double) {
-          return (double)left + (double)right;
-        } 
+            return (double)left < (double)right;
+            } 
 
-        if (left instanceof String && right instanceof String) {
-          return (String)left + (String)right;
+            if (left instanceof String && right instanceof Double) {
+               int temp =((Double) right).intValue();
+            return ((String)left).length() < temp;
+            }   
+            
+            throw new RuntimeError(expr.operator,
+                "Operands must be two numbers or a string and an integer.");
+
+        case LESS_EQUAL:
+        if (left instanceof Double && right instanceof Double) {
+            return (Double)left <= (Double)right;
+            } 
+
+        if (left instanceof String && right instanceof Double) {
+            int temp =((Double) right).intValue();
+            return ((String)left).length() <= temp;
+            }   
+            
+            throw new RuntimeError(expr.operator,
+                "Operands must be two numbers or a string and an integer.");
+
+        case SHIFT_LEFT:
+            if (left instanceof Double && right instanceof Double) {
+                int ileft = ((Double) left).intValue();
+                int iright = ((Double) right).intValue();
+                return ileft << iright;
+            }
+            throw new RuntimeError(expr.operator,
+                    "Operands must be two numbers.");
+
+        case MINUS:
+            checkNumberOperands(expr.operator, left, right);
+            return (double)left - (double)right;
+
+        case PLUS:
+            if (left instanceof Double && right instanceof Double) {
+            return (double)left + (double)right;
+            } 
+
+            if (left instanceof String && right instanceof String) {
+            return (String)left + (String)right;
+            }   
+            
+            throw new RuntimeError(expr.operator,
+                "Operands must be two numbers or two strings.");
+
+        case SLASH:
+            checkNumberOperands(expr.operator, left, right);
+            return (double)left / (double)right;
+
+        case STAR:
+            if (left instanceof Double && right instanceof Double) {
+            return (double)left * (double)right;
+            } 
+
+            if (left instanceof String && right instanceof Double) {
+            int temp = ((Double) right).intValue();
+            return new String(new char[temp]).replace("\0", (String)left);
+            }   
+            
+            throw new RuntimeError(expr.operator,
+                "Operands must be two numbers or one string and one integer.");
+
+        case BANG_EQUAL:
+            return !isEqual(left, right);
+
+        case EQUAL_EQUAL:
+            if (left instanceof String && right instanceof Double) {
+                int temp =((Double) right).intValue();
+            return ((String)left).length() == temp;
+            }   
+            else{
+                return isEqual(left, right);
+            }
         }
 
-        throw new RuntimeError(expr.operator,
-            "Operands must be two numbers or two strings.");
-      case SLASH:
-        checkNumberOperands(expr.operator, left, right);
-        return (double)left / (double)right;
-      case STAR:
-        checkNumberOperands(expr.operator, left, right);
-        return (double)left * (double)right;
-      case BANG_EQUAL: return !isEqual(left, right);
-      case EQUAL_EQUAL: return isEqual(left, right);
-    }
+        // Unreachable.
+        return null;
+        }
 
-    // Unreachable.
-    return null;
   }
-
-  
-  
-}
