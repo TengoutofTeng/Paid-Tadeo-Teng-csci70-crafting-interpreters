@@ -61,7 +61,14 @@ class Scanner {
       case ',': addToken(COMMA); break;
       case '.': addToken(DOT); break;
       case '-': addToken(MINUS); break;
-      case '+': addToken(PLUS); break;
+      case '+': 
+        if (isDigit(peek())) { 
+          number(); 
+        }
+        else { 
+          addToken(PLUS); 
+        }
+        break;
       case ';': addToken(SEMICOLON); break;
       case '*': addToken(STAR); break; 
       case '!':
